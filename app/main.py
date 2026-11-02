@@ -15,7 +15,10 @@ from app.interview_engine import (
     analyze_ats_keywords
 )
 
-app = FastAPI(title="SiapInterview - AI Mock Interview & Career Copilot")
+app = FastAPI(
+    title="SiapInterview - AI Mock Interview & Career Copilot",
+    description="Developed by Ahmad Yusuf Arifin"
+)
 
 app.add_middleware(
     CORSMiddleware,

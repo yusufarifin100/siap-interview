@@ -22,3 +22,9 @@ python run.py
 
 Buka browser di:
 👉 **http://localhost:8000**
+
+---
+
+## 👨‍💻 Developer
+Developed with ❤️ by **Ahmad Yusuf Arifin**
+
