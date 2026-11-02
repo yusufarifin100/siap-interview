@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SiapInterview - AI Mock Interview & Career Copilot</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti for Celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="/static/style.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
+
+  <!-- Header / Navbar -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+          <i data-lucide="mic" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="text-xl font-black bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">SiapInterview</span>
+          <span class="text-[10px] font-bold tracking-wider uppercase ml-1.5 px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full">MicroSaaS B2C</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Token Balance Badge -->
+        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-700">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+          <span>Kuota: <strong id="token-count" class="text-indigo-600">3 Sesi</strong></span>
+        </div>
+
+        <!-- Upgrade / Top Up Button -->
+        <button onclick="openQRISModal()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-bold shadow-sm transition-all hover:scale-105">
+          <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+          <span>Beli Sesi (Rp19k)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- ================= VIEW 1: SETUP & ONBOARDING ================= -->
+    <section id="view-setup" class="space-y-6">
+      <!-- Hero Banner -->
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-900 via-indigo-800 to-slate-900 text-white p-6 sm:p-10 shadow-xl">
+        <div class="relative z-10 max-w-2xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/30 border border-indigo-400/30 text-indigo-200 text-xs font-semibold mb-4">
+            <i data-lucide="bot" class="w-3.5 h-3.5"></i> AI Simulator Wawancara Suara & ATS Tailor
+          </div>
+          <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+            Latihan Wawancara Kerja Nyata dengan Suara AI, Sebelum Hadapi HRD Asli.
+          </h1>
+          <p class="mt-3 text-slate-300 text-sm sm:text-base leading-relaxed">
+            Upload CV Anda, masukkan deskripsi loker, dan biarkan AI menguji Anda dengan pertanyaan spesifik, mendengarkan suara Anda, serta memberikan evaluasi metode <strong class="text-white">STAR</strong>.
+          </p>
+
+          <div class="mt-6 flex flex-wrap gap-3">
+            <button onclick="fillDemoData('marketing')" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-medium backdrop-blur-sm transition flex items-center gap-2">
+              <i data-lucide="wand-2" class="w-3.5 h-3.5 text-amber-300"></i> Contoh: Digital Marketing
+            </button>
+            <button onclick="fillDemoData('tech')" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-medium backdrop-blur-sm transition flex items-center gap-2">
+              <i data-lucide="code" class="w-3.5 h-3.5 text-cyan-300"></i> Contoh: Junior Web Developer
+            </button>
+          </div>
+        </div>
+
+        <!-- Decorative Glow -->
+        <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+      </div>
+
+      <!-- Form Setup Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left: CV & Loker Input (2 cols) -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Step 1: CV Input -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center">1</span>
+                <h2 class="font-bold text-slate-800 text-base">Profil & Riwayat CV Anda</h2>
+              </div>
+              <span class="text-xs text-slate-400">PDF atau Teks</span>
+            </div>
+
+            <!-- PDF Upload Box -->
+            <div class="border-2 border-dashed border-slate-200 hover:border-indigo-400 rounded-xl p-4 text-center cursor-pointer transition bg-slate-50/50 hover:bg-indigo-50/30 mb-3" onclick="document.getElementById('cv-file-input').click()">
+              <input type="file" id="cv-file-input" accept=".pdf" class="hidden" onchange="handleFileUpload(event)">
+              <div class="flex flex-col items-center gap-2">
+                <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                  <i data-lucide="file-up" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <span class="text-sm font-semibold text-slate-700">Klik untuk upload file CV (PDF)</span>
+                  <p class="text-xs text-slate-400 mt-0.5">Sistem akan mengekstrak pengalaman & skill secara otomatis</p>
+                </div>
+              </div>
+            </div>
+            <div id="file-upload-status" class="hidden text-xs text-emerald-600 font-semibold mb-3 flex items-center gap-1.5">
+              <i data-lucide="check-circle" class="w-4 h-4"></i> <span id="file-upload-name"></span>
+            </div>
+
+            <!-- Fallback Textarea -->
+            <label class="block text-xs font-semibold text-slate-500 mb-1">Atau Tempel / Edit Ringkasan Pengalaman Anda di Sini:</label>
+            <textarea id="cv-text" rows="5" class="w-full text-xs font-mono p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition resize-y" placeholder="Contoh: Pengalaman kerja sebagai Content Creator di PT ABC (1 tahun), mahir Canva, copywriting, analisis metrik engagement Instagram..."></textarea>
+          </div>
+
+          <!-- Step 2: Job Description Input -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center justify-center">2</span>
+                <h2 class="font-bold text-slate-800 text-base">Deskripsi Lowongan yang Dilamar (Loker)</h2>
+              </div>
+              <span class="text-xs text-slate-400">Wajib Diisi</span>
+            </div>
+
+            <div class="mb-3">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Posisi / Job Title:</label>
+              <input type="text" id="role-title" class="w-full text-sm font-semibold p-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" placeholder="Contoh: Digital Marketing Specialist">
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Kualifikasi & Tanggung Jawab Loker:</label>
+              <textarea id="jd-text" rows="5" class="w-full text-xs p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition resize-y" placeholder="Tempel deskripsi loker dari LinkedIn/Jobstreet di sini..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Interview Preferences & Action (1 col) -->
+        <div class="space-y-6">
+          <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm space-y-5">
+            <h2 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i data-lucide="sliders" class="w-4 h-4 text-indigo-600"></i> Pengaturan Simulasi
+            </h2>
+
+            <!-- Persona Selector -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-2">Pewawancara (Interviewer):</label>
+              <div class="space-y-2.5">
+                <label class="flex items-start gap-3 p-3 rounded-xl border-2 border-indigo-500 bg-indigo-50/40 cursor-pointer transition persona-option" data-persona="hrd" onclick="selectPersona('hrd')">
+                  <input type="radio" name="persona" value="hrd" checked class="mt-1 text-indigo-600">
+                  <div>
+                    <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      👩‍💼 Bu Rina (HRD People)
+                    </span>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Fokus pada kepribadian, budaya tim, etos kerja, dan metode STAR.</p>
+                  </div>
+                </label>
+
+                <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:border-slate-300 cursor-pointer transition persona-option" data-persona="user_tech" onclick="selectPersona('user_tech')">
+                  <input type="radio" name="persona" value="user_tech" class="mt-1 text-indigo-600">
+                  <div>
+                    <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      👨‍💻 Pak Dimas (User Lead)
+                    </span>
+                    <p class="text-[11px] text-slate-500 mt-0.5">Kritis, teknis, menguji alur kerja nyata & pembuktian angka hasil kerja.</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Language Selector -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">Bahasa Wawancara:</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" id="btn-lang-id" onclick="setLanguage('id')" class="py-2 px-3 rounded-xl text-xs font-bold border-2 border-indigo-600 bg-indigo-50 text-indigo-700 transition">
+                  🇮🇩 Indonesia
+                </button>
+                <button type="button" id="btn-lang-en" onclick="setLanguage('en')" class="py-2 px-3 rounded-xl text-xs font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 transition">
+                  🇬🇧 English
+                </button>
+              </div>
+            </div>
+
+            <!-- Micro-SaaS Value Highlight -->
+            <div class="rounded-xl bg-amber-50 border border-amber-200 p-3 text-amber-900">
+              <div class="flex items-center gap-1.5 text-xs font-bold mb-1">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-600"></i> Suara Nyata AI
+              </div>
+              <p class="text-[11px] text-amber-700 leading-snug">
+                Pewawancara akan membacakan pertanyaan dengan suara buatan langsung di browser Anda. Nyalakan speaker/headset!
+              </p>
+            </div>
+
+            <!-- Launch Button -->
+            <button onclick="startInterviewSession()" id="btn-start" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-extrabold text-sm shadow-lg shadow-indigo-200 transition-all hover:scale-[1.02] flex items-center justify-center gap-2">
+              <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+              <span>Mulai Wawancara Sekarang</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VIEW 2: LIVE INTERVIEW ROOM ================= -->
+    <section id="view-interview" class="hidden space-y-6">
+      <!-- Top Session Status Bar -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Sesi Live Berlangsung
+          </span>
+          <span id="session-role-badge" class="text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-full">
+            Role: Digital Marketing
+          </span>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <!-- Question Progress Tracker -->
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-slate-500">Progress:</span>
+            <span id="question-progress" class="text-xs font-extrabold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-200">
+              Pertanyaan 1 dari 4
+            </span>
+          </div>
+
+          <!-- Exit / Finish Early -->
+          <button onclick="finishInterview()" class="text-xs font-semibold text-rose-600 hover:text-rose-700 hover:underline">
+            Akhiri Sesi
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Stage: Interviewer + Question + Voice Area -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Interviewer Persona Card (1 col) -->
+        <div class="bg-gradient-to-b from-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-xl flex flex-col items-center text-center justify-between min-h-[380px] relative overflow-hidden">
+          <div class="w-full flex justify-between items-center text-xs text-slate-400">
+            <span class="flex items-center gap-1"><i data-lucide="radio" class="w-3.5 h-3.5 text-emerald-400"></i> Audio Nyala</span>
+            <span id="timer-display" class="font-mono text-amber-400 font-bold">00:00</span>
+          </div>
+
+          <!-- Avatar & Talking Animation -->
+          <div class="relative my-4">
+            <div id="avatar-ring" class="w-28 h-28 rounded-full border-4 border-indigo-500/40 p-1 flex items-center justify-center transition-all duration-300">
+              <div id="avatar-icon" class="w-full h-full rounded-full bg-indigo-600 flex items-center justify-center text-3xl shadow-lg">
+                👩‍💼
+              </div>
+            </div>
+            
+            <!-- Speech Waves -->
+            <div id="speech-wave-bars" class="absolute -bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 h-5 px-2 py-1 bg-slate-950/80 rounded-full border border-slate-700 hidden">
+              <div class="wave-bar w-1 bg-indigo-400 rounded-full h-2"></div>
+              <div class="wave-bar w-1 bg-indigo-400 rounded-full h-4"></div>
+              <div class="wave-bar w-1 bg-indigo-400 rounded-full h-3"></div>
+              <div class="wave-bar w-1 bg-indigo-400 rounded-full h-5"></div>
+              <div class="wave-bar w-1 bg-indigo-400 rounded-full h-2"></div>
+            </div>
+          </div>
+
+          <div>
+            <h3 id="interviewer-name" class="font-bold text-base text-white">Bu Rina</h3>
+            <p id="interviewer-role" class="text-xs text-indigo-300">HRD & Culture Specialist</p>
+          </div>
+
+          <!-- Speech Control Button -->
+          <button id="btn-replay-audio" onclick="playQuestionSpeech()" class="mt-4 w-full py-2.5 px-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-bold transition flex items-center justify-center gap-2 text-slate-200">
+            <i data-lucide="volume-2" class="w-4 h-4 text-indigo-300"></i>
+            <span>Ulangi Suara Pertanyaan</span>
+          </button>
+        </div>
+
+        <!-- Question & Candidate Response Input (2 cols) -->
+        <div class="lg:col-span-2 space-y-5">
+          <!-- Question Display Card -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm relative">
+            <div class="flex items-center justify-between mb-2">
+              <span id="question-category" class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">
+                Behavioral / Metode STAR
+              </span>
+              <button onclick="toggleTip()" class="text-xs text-amber-600 font-semibold flex items-center gap-1 hover:underline">
+                <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i> Contekan STAR
+              </button>
+            </div>
+
+            <h2 id="current-question-text" class="text-base sm:text-lg font-bold text-slate-800 leading-snug">
+              Memuat pertanyaan wawancara...
+            </h2>
+
+            <!-- STAR Tip Box (Collapsible) -->
+            <div id="star-tip-box" class="hidden mt-3 p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 leading-relaxed">
+              <strong class="font-bold">Tips Jawaban:</strong> <span id="star-tip-content">Gunakan metode STAR: Jelaskan situasinya, peran Anda, aksi konkret, dan hasil akhirnya.</span>
+            </div>
+          </div>
+
+          <!-- Candidate Audio / Text Answering Console -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <i data-lucide="message-square" class="w-4 h-4 text-indigo-600"></i> Jawaban Anda
+              </span>
+              <span class="text-[11px] text-slate-400">Bisa bicara via mic atau ketik</span>
+            </div>
+
+            <!-- Mic Record Controller -->
+            <div class="flex flex-col sm:flex-row items-center gap-3 p-4 rounded-xl bg-slate-50 border border-slate-200">
+              <button id="btn-toggle-mic" onclick="toggleMicRecording()" class="w-14 h-14 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-md shadow-rose-200 transition-all flex-shrink-0">
+                <i id="mic-icon" data-lucide="mic" class="w-6 h-6"></i>
+              </button>
+
+              <div class="text-center sm:text-left">
+                <div class="text-xs font-bold text-slate-800" id="mic-status-label">Klik Mikrofon untuk Menjawab dengan Suara</div>
+                <div class="text-[11px] text-slate-500 mt-0.5">Suara Anda akan otomatis diubah menjadi teks secara langsung.</div>
+              </div>
+            </div>
+
+            <!-- Answer Textarea (Live Transcript / Edit) -->
+            <textarea id="answer-text" rows="4" class="w-full text-xs sm:text-sm p-3.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition resize-y" placeholder="Jawaban Anda akan muncul di sini saat Anda berbicara, atau Anda dapat mengetiknya langsung..."></textarea>
+
+            <!-- Action: Submit Answer for Evaluation -->
+            <div class="flex items-center justify-between pt-2">
+              <span class="text-xs text-slate-400">Minimal 15 kata untuk penilaian STAR optimal</span>
+              <button id="btn-submit-answer" onclick="submitAnswer()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-200 transition flex items-center gap-2">
+                <span>Evaluasi & Lanjut</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Evaluation Card of Current Answer (Appears after answer submitted) -->
+          <div id="current-eval-card" class="hidden bg-emerald-50/70 border border-emerald-200 rounded-2xl p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center" id="eval-score-badge">85</span>
+                <span class="text-xs font-bold text-emerald-900">Skor Jawaban Pertanyaan Ini</span>
+              </div>
+              <button onclick="goToNextQuestion()" class="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                <span>Pertanyaan Berikutnya</span> <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div class="p-2.5 bg-white/80 rounded-xl border border-emerald-100">
+                <strong class="text-emerald-800 block mb-1">👍 Kelebihan:</strong>
+                <span id="eval-kelebihan" class="text-slate-700"></span>
+              </div>
+              <div class="p-2.5 bg-white/80 rounded-xl border border-emerald-100">
+                <strong class="text-amber-800 block mb-1">💡 Catatan Perbaikan:</strong>
+                <span id="eval-kelemahan" class="text-slate-700"></span>
+              </div>
+            </div>
+
+            <!-- Model Answer Accordion -->
+            <div class="p-3 bg-white/90 rounded-xl border border-emerald-100 text-xs">
+              <strong class="text-indigo-900 block mb-1 font-bold">✨ Versi Jawaban Impresif (Metode STAR Ideal):</strong>
+              <p id="eval-model-answer" class="text-slate-600 italic leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VIEW 3: FINAL SCORECARD & ATS REPORT ================= -->
+    <section id="view-scorecard" class="hidden space-y-6">
+      
+      <!-- Top Action: Print & Restart -->
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-extrabold text-slate-800">Laporan Hasil Wawancara & Audit ATS</h1>
+          <p class="text-xs text-slate-500 mt-0.5">Ringkasan kesiapan kerja dan rekomendasi konkret untuk melamar posisi impian Anda.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="window.print()" class="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak PDF
+          </button>
+          <button onclick="restartSetup()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Latihan Ulang
+          </button>
+        </div>
+      </div>
+
+      <!-- Scorecard Summary Banner -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Big Score Gauge -->
+        <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-2xl p-6 shadow-xl flex flex-col items-center text-center justify-center">
+          <span class="text-xs uppercase tracking-widest text-indigo-300 font-bold mb-2">Skor Kesiapan Akhir</span>
+          <div class="relative w-36 h-36 flex items-center justify-center my-2">
+            <div class="w-36 h-36 rounded-full border-8 border-indigo-500/20 flex items-center justify-center">
+              <span id="final-overall-score" class="text-5xl font-black text-white">85</span>
+              <span class="text-lg font-bold text-indigo-300">/100</span>
+            </div>
+          </div>
+          <div id="final-verdict-badge" class="mt-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-extrabold uppercase">
+            Lolos Ambang Batas
+          </div>
+        </div>
+
+        <!-- Qualitative Summary & ATS Status (2 cols) -->
+        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between space-y-4">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800 mb-1">Evaluasi Menyeluruh Konsultan Karir AI:</h3>
+            <p id="final-summary-text" class="text-xs text-slate-600 leading-relaxed">
+              Memuat evaluasi menyeluruh...
+            </p>
+          </div>
+
+          <!-- ATS Keyword Audit Box -->
+          <div class="rounded-xl bg-slate-50 border border-slate-200 p-4 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <i data-lucide="file-search" class="w-4 h-4 text-indigo-600"></i> Audit Kesesuaian Kata Kunci (ATS Score)
+              </span>
+              <span id="ats-match-percent" class="text-xs font-extrabold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
+                80% Cocok
+              </span>
+            </div>
+
+            <div class="text-xs space-y-1.5">
+              <div>
+                <span class="text-slate-500 text-[11px] block">Kata kunci yang sudah cocok di CV Anda:</span>
+                <div id="ats-matched-tags" class="flex flex-wrap gap-1.5 mt-1"></div>
+              </div>
+              <div>
+                <span class="text-rose-500 text-[11px] font-semibold block">Kata kunci penting yang masih HILANG di CV:</span>
+                <div id="ats-missing-tags" class="flex flex-wrap gap-1.5 mt-1"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Question by Question Review -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+          <i data-lucide="list-checks" class="w-5 h-5 text-indigo-600"></i> Rincian Evaluasi Tiap Pertanyaan
+        </h2>
+
+        <div id="questions-review-list" class="space-y-4">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= QRIS MICRO-SAAS PAYMENT MODAL ================= -->
+  <div id="qris-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4 text-center relative border border-slate-200 animate-in fade-in zoom-in duration-150">
+      <button onclick="closeQRISModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto">
+        <i data-lucide="qr-code" class="w-6 h-6"></i>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-extrabold text-slate-800">Paket Pejuang Loker</h3>
+        <p class="text-xs text-slate-500 mt-0.5">Top-up 5 Sesi Simulasi Wawancara Suara AI</p>
+      </div>
+
+      <div class="py-2 px-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between text-xs">
+        <span class="text-slate-500 font-medium">Total Pembayaran:</span>
+        <span class="text-base font-extrabold text-indigo-600">Rp 19.000</span>
+      </div>
+
+      <!-- Mock QRIS Image Box -->
+      <div class="p-4 bg-white border-2 border-slate-200 rounded-xl inline-block shadow-inner">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=SIAPINTERVIEW-PRO-PASS-RP19000" alt="QRIS Code" class="w-44 h-44 mx-auto rounded">
+        <div class="mt-2 text-[10px] text-slate-400 font-mono tracking-wider">NMID: ID102030405060</div>
+      </div>
+
+      <div class="text-[11px] text-slate-500">
+        Scan dengan GoPay, OVO, ShopeePay, BCA, Mandiri, atau bank apapun.
+      </div>
+
+      <!-- Simulation Action Button -->
+      <button onclick="simulateSuccessfulPayment()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-200 transition flex items-center justify-center gap-1.5">
+        <i data-lucide="check-circle" class="w-4 h-4"></i>
+        <span>Simulasikan Pembayaran Berhasil</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-lg border border-slate-700 hidden flex items-center gap-2">
+    <i data-lucide="info" class="w-4 h-4 text-indigo-400"></i>
+    <span id="toast-message">Notifikasi</span>
+  </div>
+
+  <script src="/static/app.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

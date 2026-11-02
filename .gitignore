@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+ENV/
+*.log
+.DS_Store
+Thumbs.db
+test_audio.mp3
+.env
