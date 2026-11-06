@@ -36,11 +36,15 @@ def main():
 
     print("Mengunggah (push) ke GitHub...")
     try:
-        porcelain.push(".", "origin", "refs/heads/master:refs/heads/main")
+        porcelain.push(".", "origin", "refs/heads/main:refs/heads/main")
         print("✅ Berhasil di-push ke branch main di GitHub!")
     except Exception as e:
-        print("❌ Gagal melakukan push:", str(e))
-        print("Tips: Pastikan URL repository benar dan token akses (Personal Access Token) memiliki hak akses 'repo'.")
+        try:
+            porcelain.push(".", "origin", "refs/heads/master:refs/heads/main")
+            print("✅ Berhasil di-push ke branch main di GitHub!")
+        except Exception:
+            print("❌ Gagal melakukan push:", str(e))
+            print("Tips: Pastikan URL repository benar dan token akses (Personal Access Token) memiliki hak akses 'repo'.")
 
 if __name__ == "__main__":
     main()
