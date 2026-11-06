@@ -16,8 +16,7 @@ from app.interview_engine import (
 )
 
 app = FastAPI(
-    title="SiapInterview - AI Mock Interview & Career Copilot",
-    description="Developed by Ahmad Yusuf Arifin"
+    title="SiapInterview - AI Mock Interview & Career Copilot"
 )
 
 app.add_middleware(
