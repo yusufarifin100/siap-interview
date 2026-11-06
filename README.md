@@ -3,7 +3,7 @@
 Platform simulasi wawancara kerja berbasis AI dan auditor ATS yang dirancang khusus untuk pasar B2C (pelamar kerja, fresh graduates, career switchers).
 
 ## 🌟 Fitur Utama
-1. **Simulasi Wawancara Suara Nyata:** AI membacakan pertanyaan langsung via audio browser dan mendengarkan jawaban suara kandidat (Speech-to-Text).
+1. **Simulasi Wawancara Suara Neural HD & ElevenLabs-Ready:** AI membacakan pertanyaan dengan suara intonasi manusia yang halus (Microsoft Neural Studio Voice & dukungan ElevenLabs), bukan suara robotik browser kaku, serta mendengarkan jawaban suara kandidat (Speech-to-Text).
 2. **Kustomisasi Persona Pewawancara:** 
    - 👩‍💼 *Bu Rina (HRD People & Culture)*: Uji kepribadian, teamwork, dan metode STAR.
    - 👨‍💻 *Pak Dimas (User Lead)*: Kritis, teknis, uji metrik nyata dan alur kerja proyek.

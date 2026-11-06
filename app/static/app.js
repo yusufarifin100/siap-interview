@@ -12,7 +12,9 @@ let state = {
   isRecording: false,
   recognition: null,
   timerInterval: null,
-  secondsElapsed: 0
+  secondsElapsed: 0,
+  currentAudio: null,
+  elevenlabsApiKey: ""
 };
 
 // Demo Data Presets
@@ -199,6 +201,7 @@ async function startInterviewSession() {
   }
 
   state.roleTitle = role;
+  state.elevenlabsApiKey = (document.getElementById("elevenlabs-key")?.value || "").trim();
 
   const btnStart = document.getElementById("btn-start");
   btnStart.disabled = true;
@@ -277,35 +280,124 @@ function loadCurrentQuestion() {
   setTimeout(() => playQuestionSpeech(), 400);
 }
 
-// Text-to-Speech using Browser Native SpeechSynthesis
-function playQuestionSpeech() {
+// Stop all active audio / TTS playback
+function stopSpeech() {
+  if (state.currentAudio) {
+    try {
+      state.currentAudio.pause();
+      state.currentAudio.currentTime = 0;
+    } catch (e) {}
+    state.currentAudio = null;
+  }
+  if ('speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+    } catch (e) {}
+  }
+  const waveBars = document.getElementById("speech-wave-bars");
+  const avatarRing = document.getElementById("avatar-ring");
+  const replayBtn = document.getElementById("btn-replay-audio");
+  if (waveBars) waveBars.classList.add("hidden");
+  if (avatarRing) avatarRing.classList.remove("border-indigo-400", "scale-105");
+  if (replayBtn) replayBtn.classList.remove("opacity-60", "pointer-events-none");
+}
+
+// Text-to-Speech using High-Definition Neural TTS (Microsoft Neural / ElevenLabs) with Browser Fallback
+async function playQuestionSpeech() {
+  stopSpeech();
+
+  const q = state.questions[state.currentIndex];
+  if (!q || !q.question) return;
+
+  const waveBars = document.getElementById("speech-wave-bars");
+  const avatarRing = document.getElementById("avatar-ring");
+  const replayBtn = document.getElementById("btn-replay-audio");
+
+  const startAnimation = () => {
+    if (waveBars) waveBars.classList.remove("hidden");
+    if (avatarRing) avatarRing.classList.add("border-indigo-400", "scale-105");
+    if (replayBtn) replayBtn.classList.add("opacity-60", "pointer-events-none");
+  };
+
+  const stopAnimation = () => {
+    if (waveBars) waveBars.classList.add("hidden");
+    if (avatarRing) avatarRing.classList.remove("border-indigo-400", "scale-105");
+    if (replayBtn) replayBtn.classList.remove("opacity-60", "pointer-events-none");
+  };
+
+  try {
+    startAnimation();
+
+    // Call high-definition Neural TTS API
+    const response = await fetch("/api/tts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text: q.question,
+        persona: state.persona || "hrd",
+        language: state.language || "id",
+        elevenlabs_api_key: state.elevenlabsApiKey || null
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`TTS server error (${response.status})`);
+    }
+
+    const blob = await response.blob();
+    const audioUrl = URL.createObjectURL(blob);
+    const audio = new Audio(audioUrl);
+    state.currentAudio = audio;
+
+    audio.onended = () => {
+      stopAnimation();
+      URL.revokeObjectURL(audioUrl);
+      state.currentAudio = null;
+    };
+
+    audio.onerror = () => {
+      stopAnimation();
+      URL.revokeObjectURL(audioUrl);
+      state.currentAudio = null;
+      fallbackBrowserSpeech(q.question);
+    };
+
+    await audio.play();
+  } catch (err) {
+    console.warn("Neural TTS server error, falling back to browser speech:", err);
+    fallbackBrowserSpeech(q.question);
+  }
+}
+
+// Fallback to Browser Native SpeechSynthesis if offline/API fails
+function fallbackBrowserSpeech(text) {
   if (!('speechSynthesis' in window)) return;
 
-  window.speechSynthesis.cancel();
-  const q = state.questions[state.currentIndex];
-  if (!q) return;
+  const waveBars = document.getElementById("speech-wave-bars");
+  const avatarRing = document.getElementById("avatar-ring");
+  const replayBtn = document.getElementById("btn-replay-audio");
 
-  const utterance = new SpeechSynthesisUtterance(q.question);
+  const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = state.language === "en" ? "en-US" : "id-ID";
   utterance.rate = 1.0;
   utterance.pitch = state.persona === "hrd" ? 1.05 : 0.95;
 
-  const waveBars = document.getElementById("speech-wave-bars");
-  const avatarRing = document.getElementById("avatar-ring");
-
   utterance.onstart = () => {
-    waveBars.classList.remove("hidden");
-    avatarRing.classList.add("border-indigo-400", "scale-105");
+    if (waveBars) waveBars.classList.remove("hidden");
+    if (avatarRing) avatarRing.classList.add("border-indigo-400", "scale-105");
+    if (replayBtn) replayBtn.classList.add("opacity-60", "pointer-events-none");
   };
 
   utterance.onend = () => {
-    waveBars.classList.add("hidden");
-    avatarRing.classList.remove("border-indigo-400", "scale-105");
+    if (waveBars) waveBars.classList.add("hidden");
+    if (avatarRing) avatarRing.classList.remove("border-indigo-400", "scale-105");
+    if (replayBtn) replayBtn.classList.remove("opacity-60", "pointer-events-none");
   };
 
   utterance.onerror = () => {
-    waveBars.classList.add("hidden");
-    avatarRing.classList.remove("border-indigo-400", "scale-105");
+    if (waveBars) waveBars.classList.add("hidden");
+    if (avatarRing) avatarRing.classList.remove("border-indigo-400", "scale-105");
+    if (replayBtn) replayBtn.classList.remove("opacity-60", "pointer-events-none");
   };
 
   // Find preferred voice
@@ -326,6 +418,7 @@ function toggleMicRecording() {
 }
 
 function startMic() {
+  stopSpeech();
   state.recognition = initSpeechRecognition();
   if (!state.recognition) {
     showToast("Browser tidak mendukung mic speech recognition. Anda dapat mengetik jawaban.");
@@ -359,6 +452,7 @@ function toggleTip() {
 // Submit Answer for Instant Evaluation
 async function submitAnswer() {
   stopMic();
+  stopSpeech();
   const ans = document.getElementById("answer-text").value.trim();
   if (!ans) {
     showToast("Silakan berikan jawaban terlebih dahulu (bicara via mic atau ketik).");
@@ -417,6 +511,7 @@ async function submitAnswer() {
 }
 
 function goToNextQuestion() {
+  stopSpeech();
   state.currentIndex++;
   if (state.currentIndex < state.questions.length) {
     loadCurrentQuestion();
@@ -429,7 +524,7 @@ function goToNextQuestion() {
 async function finishInterview() {
   stopTimer();
   stopMic();
-  window.speechSynthesis.cancel();
+  stopSpeech();
 
   showToast("Menyusun Laporan & Audit ATS...");
 

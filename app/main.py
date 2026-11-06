@@ -1,13 +1,15 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 import io
 import os
 import uuid
 import pypdf
+import requests
+import edge_tts
 
 from app.interview_engine import (
     generate_questions_builtin,
@@ -50,9 +52,67 @@ class FinalizeRequest(BaseModel):
     session_id: str
     answers: List[Dict[str, Any]]
 
+class TTSRequest(BaseModel):
+    text: str
+    persona: str = "hrd"
+    language: str = "id"
+    elevenlabs_api_key: Optional[str] = None
+    voice_id: Optional[str] = None
+
 class QRISPaymentRequest(BaseModel):
     package_name: str
     price: int
+
+async def synthesize_speech(
+    text: str,
+    persona: str = "hrd",
+    language: str = "id",
+    elevenlabs_api_key: Optional[str] = None,
+    voice_id: Optional[str] = None
+) -> bytes:
+    # 1. ElevenLabs API if key provided
+    api_key = elevenlabs_api_key or os.environ.get("ELEVENLABS_API_KEY")
+    if api_key:
+        try:
+            target_voice = voice_id
+            if not target_voice:
+                # Rachel (warm female) for Bu Rina, Antoni (confident male) for Pak Dimas
+                target_voice = "21m00Tcm4TlvDq8ikWAM" if persona == "hrd" else "ErXwobaYiN019PkySvjV"
+            url = f"https://api.elevenlabs.io/v1/text-to-speech/{target_voice}"
+            resp = requests.post(
+                url,
+                headers={
+                    "xi-api-key": api_key,
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "text": text,
+                    "model_id": "eleven_multilingual_v2",
+                    "voice_settings": {
+                        "stability": 0.5,
+                        "similarity_boost": 0.75
+                    }
+                },
+                timeout=12
+            )
+            if resp.status_code == 200 and resp.content:
+                return resp.content
+        except Exception as err:
+            print("ElevenLabs TTS error, falling back to Microsoft Neural TTS:", err)
+
+    # 2. Microsoft Edge Neural Voice (ultra natural, smooth human intonation, free)
+    if language == "en":
+        voice = "en-US-EmmaNeural" if persona == "hrd" else "en-US-AndrewNeural"
+    else:
+        # Indonesian Neural Voices: Bu Rina (Gadis), Pak Dimas (Ardi)
+        voice = "id-ID-GadisNeural" if persona == "hrd" else "id-ID-ArdiNeural"
+
+    communicate = edge_tts.Communicate(text, voice)
+    chunks = []
+    async for chunk in communicate.stream():
+        if chunk["type"] == "audio":
+            chunks.append(chunk["data"])
+    return b"".join(chunks)
 
 @app.post("/api/extract-cv")
 async def extract_cv(file: UploadFile = File(...)):
@@ -159,6 +219,42 @@ async def finalize_scorecard(req: FinalizeRequest):
         "ats_result": ats_result,
         "answers_breakdown": answers
     }
+
+@app.post("/api/tts")
+async def generate_tts(req: TTSRequest):
+    if not req.text.strip():
+        raise HTTPException(status_code=400, detail="Teks tidak boleh kosong.")
+    try:
+        audio_bytes = await synthesize_speech(
+            text=req.text,
+            persona=req.persona,
+            language=req.language,
+            elevenlabs_api_key=req.elevenlabs_api_key,
+            voice_id=req.voice_id
+        )
+        return Response(content=audio_bytes, media_type="audio/mpeg")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gagal memproses TTS: {str(e)}")
+
+@app.get("/api/tts")
+async def generate_tts_get(
+    text: str = Query(...),
+    persona: str = Query("hrd"),
+    language: str = Query("id"),
+    elevenlabs_api_key: Optional[str] = Query(None)
+):
+    if not text.strip():
+        raise HTTPException(status_code=400, detail="Teks tidak boleh kosong.")
+    try:
+        audio_bytes = await synthesize_speech(
+            text=text,
+            persona=persona,
+            language=language,
+            elevenlabs_api_key=elevenlabs_api_key
+        )
+        return Response(content=audio_bytes, media_type="audio/mpeg")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Gagal memproses TTS: {str(e)}")
 
 @app.post("/api/qris-checkout")
 async def qris_checkout(req: QRISPaymentRequest):

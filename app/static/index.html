@@ -199,14 +199,28 @@
               </div>
             </div>
 
-            <!-- Micro-SaaS Value Highlight -->
-            <div class="rounded-xl bg-amber-50 border border-amber-200 p-3 text-amber-900">
-              <div class="flex items-center gap-1.5 text-xs font-bold mb-1">
-                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-600"></i> Suara Nyata AI
+            <!-- HD Voice Feature & ElevenLabs Option -->
+            <div class="rounded-xl bg-gradient-to-br from-indigo-50/90 to-violet-50/90 border border-indigo-200/80 p-3.5 space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5 text-xs font-bold text-indigo-900">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-600"></i> Suara Pewawancara HD (Neural Studio)
+                </div>
+                <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">Smooth Human</span>
               </div>
-              <p class="text-[11px] text-amber-700 leading-snug">
-                Pewawancara akan membacakan pertanyaan dengan suara buatan langsung di browser Anda. Nyalakan speaker/headset!
+              <p class="text-[11px] text-indigo-800/80 leading-snug">
+                Didukung <strong>Microsoft Neural AI & ElevenLabs-Ready</strong> (Suara Bu Rina & Pak Dimas halus, natural, dan tidak robotik).
               </p>
+              
+              <!-- Optional ElevenLabs API Key Accordion -->
+              <details class="text-[11px] pt-1 border-t border-indigo-200/60">
+                <summary class="cursor-pointer text-indigo-600 font-semibold hover:underline flex items-center gap-1">
+                  <i data-lucide="key" class="w-3 h-3"></i> Gunakan ElevenLabs API Key Sendiri (Opsional)
+                </summary>
+                <div class="mt-2 space-y-1">
+                  <input type="password" id="elevenlabs-key" placeholder="xi-api-key (kosongkan untuk pakai Neural HD gratis)" class="w-full p-2 text-xs rounded-lg border border-indigo-200 focus:ring-1 focus:ring-indigo-500 outline-none bg-white">
+                  <p class="text-[10px] text-slate-500">Jika kosong, otomatis menggunakan suara Neural AI kualitas tinggi secara gratis tanpa limit kuota.</p>
+                </div>
+              </details>
             </div>
 
             <!-- Launch Button -->
