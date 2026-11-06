@@ -36,11 +36,11 @@ def main():
 
     print("Mengunggah (push) ke GitHub...")
     try:
-        porcelain.push(".", "origin", "refs/heads/main:refs/heads/main")
+        porcelain.push(".", repo_url, "refs/heads/main:refs/heads/main")
         print("✅ Berhasil di-push ke branch main di GitHub!")
     except Exception as e:
         try:
-            porcelain.push(".", "origin", "refs/heads/master:refs/heads/main")
+            porcelain.push(".", repo_url, "refs/heads/master:refs/heads/main")
             print("✅ Berhasil di-push ke branch main di GitHub!")
         except Exception:
             print("❌ Gagal melakukan push:", str(e))
